@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby 
+
+/#
+This script was created by Campbell Murray  <@zyx2k>
+When executed it will reply to any TCP connect request on any port.
+
+It is available for public use, modification and redistribution under the GPL license
+agreement.  
+
+NOTES: This script was tested as working on an Ubuntu 11.04 32 bit server instance
+running in VirtualBox on a Fedora 16 KDE operating system.  The VM has a 4GB drive and
+1 GB of RAM.  The server was installed with a GB keyboard and locale.  Apparmour and ufw
+were removed and ruby1.8 installed.
+
+This is version 0.1 for public release.
+#/
+
+#IP Tables have to be modified to send all traffic to port 1.
+#Forward all TCP traffic to port 1
+
+system('iptables -t nat -A PREROUTING -m tcp -p tcp -j REDIRECT --to-port 1')
+
+require 'socket'
+# Initialise socket to listen and respond on port 1 for TCP
+server = TCPServer.open(1)
+# TCP Server runs forever
+
+loop {
+  Thread.start(server.accept) do |client|
+# Send a banner to the client
+    	client.puts "Open"
+    client.close
+  end
+}
